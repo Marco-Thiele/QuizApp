@@ -1,9 +1,16 @@
-.out-container{
+body{
     background-color: #FEFAEF;
+}
+
+.out-container{ 
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.container-fluid{
+    flex-direction: column;
 }
 
 .quiz-card{
@@ -53,4 +60,11 @@
     display: flex;
     justify-content: center;
     margin-top: 24px;
+}
+
+@media(max-width: 300px){
+    .question-footer{
+        flex-direction: column;
+        gap: 10px;
+    }
 }
