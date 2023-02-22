@@ -3,7 +3,6 @@ body{
 }
 
 .out-container{ 
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,6 +14,8 @@ body{
 
 .quiz-card{
     width: 30rem;
+    background-color: #FEFAEF;
+    border: unset;
 }
 
 .question-footer{
@@ -60,6 +61,16 @@ body{
     display: flex;
     justify-content: center;
     margin-top: 24px;
+}
+
+@media(max-width:400px){
+    .card-img-top{
+        max-height: 200px;
+    }   
+
+    .progress{
+        --bs-progress-height: 0.5rem
+    }
 }
 
 @media(max-width: 300px){

@@ -59,14 +59,14 @@ let questions = [
 
 
 
-let images = ['/img/it-html.jpg', '/img/makler.png', '/img/games.png', '/img/verhütung.jpg', '/img/ente.png', '/img/tacho.png', '/img/sushi.png']
+let images = ['img/it-html.jpg', 'img/makler.png', 'img/games.png', 'img/verhütung.jpg', 'img/ente.png', 'img/tacho.png', 'img/sushi.png']
 
 let currentQuestion = 0;
 let rightQuestion = 0;
 let audioSucces = new Audio('audio/succes.mp3');
 let audioFail = new Audio('audio/wrong.mp3');
 let audioEndgame = new Audio('audio/endgame.mp3');
-
+let answered = false;
 
 function init() {
     document.getElementById('allQuestion').innerHTML = questions.length;
@@ -84,12 +84,12 @@ function showquestion() {
 }
 
 
-function gameIsOver(){
-   return currentQuestion >= questions.length
+function gameIsOver() {
+    return currentQuestion >= questions.length
 }
 
 
-function showendscreen(){
+function showendscreen() {
     document.getElementById('endscreen').style = '';
     document.getElementById('questionbody').style = 'display: none';
     endscreenNumber()
@@ -99,20 +99,56 @@ function showendscreen(){
 }
 
 
-function updateToNextQuestion(){
-        let question = questions[currentQuestion];
-        let image = images[currentQuestion];
-        document.getElementById('question-number').innerHTML = currentQuestion + 1;
-        document.getElementById('questiontext').innerHTML = question['question'];
-        document.getElementById('answer_1').innerHTML = question['answer1'];
-        document.getElementById('answer_2').innerHTML = question['answer2'];
-        document.getElementById('answer_3').innerHTML = question['answer3'];
-        document.getElementById('answer_4').innerHTML = question['answer4'];
-        document.getElementById('picture').src = image
+function updateToNextQuestion() {
+    let question = questions[currentQuestion];
+    let image = images[currentQuestion];
+    renderNextQuestion(question, image)
+    if (answered) {
+        ifAnswerd()
+    } else {
+        ifNotAnswerd()
+    }
+    resetAnswerButtons()
 }
 
 
-function updateProgressBar(){
+function renderNextQuestion(question,image){
+    document.getElementById('question-number').innerHTML = currentQuestion + 1;
+    document.getElementById('questiontext').innerHTML = question['question'];
+    document.getElementById('answer_1').innerHTML = question['answer1'];
+    document.getElementById('answer_2').innerHTML = question['answer2'];
+    document.getElementById('answer_3').innerHTML = question['answer3'];
+    document.getElementById('answer_4').innerHTML = question['answer4'];
+    document.getElementById('picture').src = image
+}
+
+
+function ifAnswerd() {
+    document.getElementById('answer_1').parentNode.onclick = null;
+    document.getElementById('answer_2').parentNode.onclick = null;
+    document.getElementById('answer_3').parentNode.onclick = null;
+    document.getElementById('answer_4').parentNode.onclick = null;
+}
+
+
+function ifNotAnswerd() {
+    document.getElementById('answer_1').parentNode.onclick = function () {
+        answer('answer_1');
+    }
+    document.getElementById('answer_2').parentNode.onclick = function () {
+        answer('answer_2');
+    }
+    document.getElementById('answer_3').parentNode.onclick = function () {
+        answer('answer_3');
+    }
+    document.getElementById('answer_4').parentNode.onclick = function () {
+        answer('answer_4');
+    }
+}
+
+
+
+function updateProgressBar() {
     let percent = currentQuestion / questions.length;
     percent = Math.round(percent * 100);
     document.getElementById('progressbar').innerHTML = `${percent} %`;
@@ -125,20 +161,36 @@ function answer(selection) {
     selectedQuestionNumber = selection.slice(-1);
     let idOfRightAnswer = `answer_${right_answer}`;
     if (rightAnswerSelected(selectedQuestionNumber, right_answer)) {
-        document.getElementById(selection).parentNode.classList.add('bg-success');
-        audioSucces.play()
-        rightQuestion++;
+        rigtAnswerPush(selection)
     } else {
-        document.getElementById(selection).parentNode.classList.add('bg-danger');
-        document.getElementById(idOfRightAnswer).parentNode.classList.add('bg-success');
-        audioFail.play()
+        falseAnwerPush(selection)
     }
-    document.getElementById('next-button').disabled = false;
+    let answerButtons = document.getElementsByClassName('quiz-answer-card');
+    for (let i = 0; i < answerButtons.length; i++) {
+        answerButtons[i].setAttribute('onclick', '');
+        document.getElementById('next-button').disabled = false;
+    }
 }
 
-function rightAnswerSelected(selectedQuestionNumber, right_answer){
-   return selectedQuestionNumber == right_answer
+
+function falseAnwerPush(selection){
+    document.getElementById(selection).parentNode.classList.add('bg-danger');
+    document.getElementById(idOfRightAnswer).parentNode.classList.add('bg-success');
+    audioFail.play()
 }
+
+
+function rigtAnswerPush(selection){
+    document.getElementById(selection).parentNode.classList.add('bg-success');
+    audioSucces.play()
+    rightQuestion++;
+}
+
+
+function rightAnswerSelected(selectedQuestionNumber, right_answer) {
+    return selectedQuestionNumber == right_answer
+}
+
 
 
 function nextQuestion() {
@@ -150,14 +202,12 @@ function nextQuestion() {
 
 
 function resetAnswerButtons() {
-    document.getElementById('answer_1').parentNode.classList.remove('bg-danger')
-    document.getElementById('answer_1').parentNode.classList.remove('bg-success')
-    document.getElementById('answer_2').parentNode.classList.remove('bg-danger')
-    document.getElementById('answer_2').parentNode.classList.remove('bg-success')
-    document.getElementById('answer_3').parentNode.classList.remove('bg-danger')
-    document.getElementById('answer_3').parentNode.classList.remove('bg-success')
-    document.getElementById('answer_4').parentNode.classList.remove('bg-danger')
-    document.getElementById('answer_4').parentNode.classList.remove('bg-success')
+    let answerButtons = document.getElementsByClassName('quiz-answer-card');
+    for (let i = 0; i < answerButtons.length; i++) {
+        answerButtons[i].setAttribute('onclick', `answer('${answerButtons[i].querySelector('.card-body').getAttribute('id')}')`);
+        answerButtons[i].classList.remove('bg-danger');
+        answerButtons[i].classList.remove('bg-success');
+    }
 }
 
 
